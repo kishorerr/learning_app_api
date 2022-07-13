@@ -1,6 +1,6 @@
 class Subject < ApplicationRecord
   belongs_to :s_class
-  belongs_to :board
+  has_many :chapters, dependent: :destroy
 
   validates_presence_of :s_name
 end

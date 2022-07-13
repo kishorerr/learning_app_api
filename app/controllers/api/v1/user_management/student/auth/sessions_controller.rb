@@ -5,9 +5,9 @@ class Api::V1::UserManagement::Student::Auth::SessionsController < Api::ApiContr
     before_action :ensure_params_exist, only: [:create]
 
     def create
-           resource = Student.find_for_database_authentication(email: params[:user][:email])
+           resource = Student.find_for_database_authentication(email: params[:email])
            return invalid_login_attempt unless resource
-           if resource.valid_password?(params[:user][:password])
+           if resource.valid_password?(params[:password])
                  sign_in("user", resource)
                  access_token = Doorkeeper::AccessToken.create(
                   resource_owner_id: resource.id,
@@ -15,7 +15,7 @@ class Api::V1::UserManagement::Student::Auth::SessionsController < Api::ApiContr
                   expires_in: Doorkeeper.configuration.access_token_expires_in.to_i,
                   scopes: ''
                 )
-                 render json: {status: "successful", user: { id: resource.id, email: resource.email,  auth_token: access_token.token, created_at: resource.created_at, updated_at: resource.updated_at }}
+                 render json: {status:"successful", user: { id: resource.id, email: resource.email,  auth_token: access_token.token, created_at: resource.created_at, updated_at: resource.updated_at }}
                  return
            end
            invalid_login_attempt
@@ -24,7 +24,7 @@ class Api::V1::UserManagement::Student::Auth::SessionsController < Api::ApiContr
      def destroy
            if current_user.present?
                  sign_out(current_user)
-                 render json: {status: "successful", message: "Your Account Logged Out Successfully" }
+                 render json: {status:"successful", message: "Your Account Logged Out Successfully" }
            else
                  render json: {status: "failed", message: "Authentication token is not valid" }, status: :unauthorized
            end
@@ -33,8 +33,8 @@ class Api::V1::UserManagement::Student::Auth::SessionsController < Api::ApiContr
       protected
 
       def ensure_params_exist
-             return unless params[:user].blank?
-             render json: {status: "failed", message: "Missing User Parameter"}, status: :bad_request
+             return unless params[:email].blank?
+             render json: {status: "failed", message: "Missing Parameters"}, status: :bad_request
       end
 
       def invalid_login_attempt

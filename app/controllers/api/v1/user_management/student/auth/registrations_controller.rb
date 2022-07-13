@@ -5,15 +5,15 @@ class Api::V1::UserManagement::Student::Auth::RegistrationsController < Api::Api
     before_action :check_user, only: [:create]
 
    def create
-       if params[:user][:username].blank? || params[:user][:email].blank? || params[:user][:password].blank? || params[:user][:password_confirmation].blank? || params[:user][:ph_no].blank?
-            render json: {status: "failed", message: "Missing parameters"}
+       if params[:username].blank? || params[:email].blank? || params[:password].blank? || params[:password_confirmation].blank? || params[:ph_no].blank?
+            render json: {status: "failed", message: "Missing parameters"}, status: :unprocessable_entity
        else
             @student = Student.new(user_params)
             if @student.save
                @student.create_student_enroll!(otp: "1234", otp_generated_at: DateTime.now) 
-                  render json: {status: "successful", user: { id: @student.id, email: @student.email, created_at: @student.created_at, updated_at: @student.updated_at }}
+                  render json: {status: "successful", id: @student.id, email: @student.email, created_at: @student.created_at, updated_at: @student.updated_at }
             else
-                  render json: {status: "failed", user: @student.errors}
+                  render json: {status: "failed", user: @student.errors}, status: :unprocessable_entity
             end
        end
    end
@@ -36,11 +36,11 @@ class Api::V1::UserManagement::Student::Auth::RegistrationsController < Api::Api
    private
    
    def user_params
-          params.require(:user).permit(:username,:ph_no,:dob,:email,:password,:password_confirmation)
+          params.permit(:username,:ph_no,:dob,:email,:password,:password_confirmation)
    end
 
    def check_user
-        if Student.exists?(email: params[:user][:email])
+        if Student.exists?(email: params[:email])
              render  json: {status: "failed", message: "User already exists"}, status: :unprocessable_entity
         end
    end

@@ -3,8 +3,11 @@ module RequestSpecHelper
       JSON.parse(response.body)
     end
 
-    def set_board (s_class_no)
-      @board = Board.find_by(class_no: s_class_no)
-      @board.id
+    def auth_headers(user)
+      post '/api/v1/user_management/student/auth/signin', params:  { email: user.email, password: user.password } 
+      return { auth: { 'Content-Type' => response.headers['Content-Type'],
+        'Authorization' => "Bearer #{JSON.parse(response.body)["user"]["auth_token"]}" }
+        }
     end
+
   end

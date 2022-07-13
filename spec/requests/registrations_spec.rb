@@ -1,21 +1,21 @@
 require 'rails_helper'
 
-RSpec.describe '/api/v1/user_management/student/auth/signup', type: :request do
+RSpec.describe 'api/v1/user_management/student/auth/registrations', type: :request do
   
   
   describe 'POST /api/v1/user_management/student/auth/signup' do
 
-    let(:valid_attributes) { { username: 'Foo',ph_no: '74923822',dob: DateTime.now,email: 'foobar@email.com',password: 'bar',password_confirmation: 'bar' } }
+    let(:valid_attributes) { {username: 'Foo',ph_no: '74923822',dob: '2001-07-08',email: 'foo@email.com',password: 'barcode',password_confirmation: 'barcode' } }
 
     context 'when the request is valid' do
       before { post '/api/v1/user_management/student/auth/signup', params: valid_attributes }
 
       it 'creates a student' do
-        expect(json['username']).to eq('Foo')
+        expect(json['email']).to eq('foo@email.com')
       end
 
-      it 'returns status code 201' do
-        expect(response).to have_http_status(201)
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
       end
     end
 
@@ -27,5 +27,4 @@ RSpec.describe '/api/v1/user_management/student/auth/signup', type: :request do
       end
     end
   end
-
 end

@@ -8,15 +8,11 @@ class Api::ApiController < ActionController::Base
         if token
          @current_user ||= Student.find_by(id: doorkeeper_token[:resource_owner_id])    
         end
+        return @current_user
     end
 
-   def authenticate_with_token!
-        render json: { errors: "Not authenticated"}, status: :unauthorized 
-        unless current_user.present?
-            end
-
-        def not_found
-      render json: {errors: 'Not found' }, status: 404
-        end
-   end
+    def not_found
+        render json: {errors: 'Not found' }, status: 404
+    end
+   
 end

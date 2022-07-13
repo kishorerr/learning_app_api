@@ -59,3 +59,7 @@ gem "devise", "~> 4.8"
 
 gem "devise-doorkeeper", "~> 1.2"
 
+gem 'activerecord-postgres_enum'
+
+gem 'active_model_serializers'
+# gem 'will_paginate', '~> 3.1.0'

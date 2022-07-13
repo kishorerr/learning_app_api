@@ -5,4 +5,5 @@ class Student < ActiveRecord::Base
          :recoverable, :rememberable, :validatable, :trackable
          
   has_one :student_enroll, dependent: :destroy
+  validates_presence_of :username, :ph_no, :dob, :email, :password
 end

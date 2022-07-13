@@ -1,12 +1,14 @@
 require 'rails_helper'
 
-RSpec.describe '/api/v1/s_classes', type: :request do
+RSpec.describe '/api/v1/meta/s_classes', type: :request do
 
-  let!(:s_classes) { create_list(:s_class, 10) }
+  let!(:board) { create(:board) }
+  let(:board_id) { board.id }
+  let!(:s_classes) { create_list(:s_class, 10, board_id: board_id) }
   let(:s_class_id) { s_classes.first.id }
 
-  describe 'GET /api/v1/s_classes' do
-    before { get '/api/v1/s_classes' }
+  describe 'GET /api/v1/meta/boards/:board_id/s_classes' do
+    before { get "/api/v1/meta/boards/#{board_id}/s_classes" }
 
     it 'returns s_classes' do
       expect(json).not_to be_empty
@@ -18,48 +20,54 @@ RSpec.describe '/api/v1/s_classes', type: :request do
     end
   end
 
+  describe 'GET /api/v1/meta/boards/:board_id/s_classes/:s_class_id' do
+    before { get "/api/v1/meta/boards/#{board_id}/s_classes/#{s_class_id}" }
 
-  describe 'POST /api/v1/s_classes' do
-    let(:valid_attributes) { { class_no: '10' } }
+    context 'when todo item exists' do
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+      end
+
+      it 'returns the item' do
+        expect(json['id']).to eq(s_class_id)
+      end
+    end
+  end
+
+
+  describe 'POST /api/v1/meta/boards/:board_id/s_classes' do
+    let(:valid_attributes) { { class_no: 9 } }
 
     context 'when the request is valid' do
-      before { post '/api/v1/s_classes', params: valid_attributes }
+      before { post "/api/v1/meta/boards/#{board_id}/s_classes", params: valid_attributes }
 
       it 'creates a board' do
-        expect(json['class_no']).to eq(10)
+        expect(json['class_no']).to eq(9)
       end
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
       end
     end
-
-    context 'when the request is invalid' do
-      before { post '/api/v1/s_classes', params: { } }
-
-      it 'returns status code 422' do
-        expect(response).to have_http_status(422)
-      end
-    end
   end
 
-  describe 'PUT /api/v1/s_classes/:id' do
-    let(:valid_attributes) { { class: '10' } }
+  describe 'PUT /api/v1/meta/boards/:board_id/s_classes/:id' do
+    let(:valid_attributes) { { class_no: 6 } }
 
     context 'when the record exists' do
-      before { put "/api/v1/s_classes/#{s_class_id}", params: valid_attributes }
+      before { put "/api/v1/meta/boards/#{board_id}/s_classes/#{s_class_id}", params: valid_attributes }
 
       it 'updates the record' do
-        expect(response.body).to be_empty
+        expect(json['class_no']).to eq(6)
       end
 
-      it 'returns status code 204' do
-        expect(response).to have_http_status(204)
+      it 'returns status code 201' do
+        expect(response).to have_http_status(201)
       end
     end
   end
-  describe 'DELETE /api/v1/s_classes/:id' do
-    before { delete "/api/v1/s_classes/#{s_class_id}" }
+  describe 'DELETE /api/v1/meta/boards/:board_id/s_classes/:id' do
+    before { delete "/api/v1/meta/boards/#{board_id}/s_classes/#{s_class_id}" }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)
